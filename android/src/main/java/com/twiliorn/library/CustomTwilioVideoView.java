@@ -222,6 +222,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     public CustomTwilioVideoView(ThemedReactContext context) {
         super(context);
+        Log.d("****EC****", "CustoTwilioVideoView");
+
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
