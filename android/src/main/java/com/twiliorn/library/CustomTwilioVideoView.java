@@ -313,7 +313,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private void buildExternalDeviceInfo() {
         Camera2Enumerator enumerator = new Camera2Enumerator(getContext());
         String[] deviceNames = enumerator.getDeviceNames();
-        Log.d(NEWTAG, "buildExternalDeviceInfo: " + enumerator.getDeviceNames().toString());
+        Log.d(NEWTAG, "buildExternalDeviceInfo: " + deviceNames);
     }
 
     private boolean createLocalVideo(boolean enableVideo, String cameraType) {
