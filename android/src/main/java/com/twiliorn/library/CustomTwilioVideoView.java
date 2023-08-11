@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.camera2.CameraManager;
 import android.media.AudioAttributes;
 import android.media.AudioDeviceInfo;
 import android.media.AudioFocusRequest;
@@ -79,6 +80,8 @@ import com.twilio.video.VideoCodec;
 import tvi.webrtc.voiceengine.WebRtcAudioManager;
 
 import tvi.webrtc.Camera1Enumerator;
+import tvi.webrtc.Camera2Enumerator;
+
 import tvi.webrtc.HardwareVideoEncoderFactory;
 import tvi.webrtc.HardwareVideoDecoderFactory;
 import tvi.webrtc.VideoCodecInfo;
@@ -116,6 +119,8 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICI
 
 public class CustomTwilioVideoView extends View implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "CustomTwilioVideoView";
+    private static final String NEWTAG = "ECCustomTwilioVideoView";
+
     private static final String DATA_TRACK_MESSAGE_THREAD_NAME = "DataTrackMessages";
     private static final String FRONT_CAMERA_TYPE = "front";
     private static final String BACK_CAMERA_TYPE = "back";
@@ -225,6 +230,10 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         super(context);
         Log.d("ECCustomTwilioVideoView", "CustomTwilioVideoView init");
 
+        Camera2Enumerator enumerator = new Camera2Enumerator(context);
+        Log.d("ECCustomTwilioVideoView", "enumerator.getDeviceNames()" + enumerator.getDeviceNames());
+
+
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
@@ -254,7 +263,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         return new VideoFormat(VideoDimensions.CIF_VIDEO_DIMENSIONS, 15);
     }
 
-    private Camera2Capturer createCameraCaputurer(Context context, String cameraId) {
+    private Camera2Capturer createCameraCapturer(Context context, String cameraId) {
+
+
         Camera2Capturer newCameraCapturer = null;
         try {
             newCameraCapturer = new Camera2Capturer(
@@ -275,7 +286,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
                         @Override
                         public void onError(Camera2Capturer.Exception camera2CapturerException) {
-                            Log.i("ECCustomTwilioVideoView", "Error getting camera");
+                            Log.i(NEWTAG, "Error getting camera");
                         }
                     }
             );
@@ -299,25 +310,32 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         }
     }
 
+    private void buildExternalDeviceInfo() {
+        Camera2Enumerator enumerator = new Camera2Enumerator(getContext());
+        String[] deviceNames = enumerator.getDeviceNames();
+        Log.d(NEWTAG, "buildExternalDeviceInfo: " + enumerator.getDeviceNames());
+    }
+
     private boolean createLocalVideo(boolean enableVideo, String cameraType) {
+        Log.d(NEWTAG, "createLocalVideo");
         isVideoEnabled = enableVideo;
 
         // Share your camera
-        buildDeviceInfo();
+        buildExternalDeviceInfo();
 
         if (cameraType.equals(CustomTwilioVideoView.FRONT_CAMERA_TYPE)) {
             if (frontFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputurer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), frontFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputurer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), backFacingDevice);
             }
         } else {
             if (backFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputurer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), backFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputurer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), frontFacingDevice);
             }
         }
 
