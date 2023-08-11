@@ -9,6 +9,7 @@
 package com.twiliorn.library;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -313,7 +314,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private void buildExternalDeviceInfo() {
         Camera2Enumerator enumerator = new Camera2Enumerator(getContext());
         String[] deviceNames = enumerator.getDeviceNames();
-        Log.d(NEWTAG, "buildExternalDeviceInfo: " + deviceNames);
+        Log.d(NEWTAG, "buildExternalDeviceInfo: " + Arrays.toString(deviceNames));
     }
 
     private boolean createLocalVideo(boolean enableVideo, String cameraType) {
