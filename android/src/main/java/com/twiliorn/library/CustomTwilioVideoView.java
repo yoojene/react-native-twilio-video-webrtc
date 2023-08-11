@@ -38,6 +38,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.twilio.video.AudioTrackPublication;
 import com.twilio.video.BaseTrackStats;
+import com.twilio.video.Camera2Capturer;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
@@ -201,7 +202,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private static PatchedVideoView thumbnailVideoView;
     private static LocalVideoTrack localVideoTrack;
 
-    private static CameraCapturer cameraCapturer;
+    private static Camera2Capturer cameraCapturer;
     private LocalAudioTrack localAudioTrack;
     private AudioManager audioManager;
     private int previousAudioMode;
@@ -222,7 +223,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     public CustomTwilioVideoView(ThemedReactContext context) {
         super(context);
-        Log.d("****EC****", "CustoTwilioVideoView");
+        Log.d("ECCustomTwilioVideoView", "CustomTwilioVideoView init");
 
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
@@ -253,13 +254,13 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         return new VideoFormat(VideoDimensions.CIF_VIDEO_DIMENSIONS, 15);
     }
 
-    private CameraCapturer createCameraCaputer(Context context, String cameraId) {
-        CameraCapturer newCameraCapturer = null;
+    private Camera2Capturer createCameraCaputurer(Context context, String cameraId) {
+        Camera2Capturer newCameraCapturer = null;
         try {
-            newCameraCapturer = new CameraCapturer(
+            newCameraCapturer = new Camera2Capturer(
                     context,
                     cameraId,
-                    new CameraCapturer.Listener() {
+                    new Camera2Capturer.Listener() {
                         @Override
                         public void onFirstFrameAvailable() {
                         }
@@ -273,8 +274,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                         }
 
                         @Override
-                        public void onError(int i) {
-                            Log.i("CustomTwilioVideoView", "Error getting camera");
+                        public void onError(Camera2Capturer.Exception camera2CapturerException) {
+                            Log.i("ECCustomTwilioVideoView", "Error getting camera");
                         }
                     }
             );
@@ -306,17 +307,17 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
         if (cameraType.equals(CustomTwilioVideoView.FRONT_CAMERA_TYPE)) {
             if (frontFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCaputurer(getContext(), frontFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCaputurer(getContext(), backFacingDevice);
             }
         } else {
             if (backFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCaputurer(getContext(), backFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCaputurer(getContext(), frontFacingDevice);
             }
         }
 
