@@ -135,6 +135,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private String cameraType = "";
     private boolean enableH264Codec = false;
 
+    private boolean isSupported = false;
+
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
             Events.ON_VIDEO_CHANGED,
@@ -268,6 +270,11 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
 
         Camera2Capturer newCameraCapturer = null;
+
+        isSupported = newCameraCapturer.isSupported(context);
+
+        Log.d(NEWTAG, "createCameraCapturer" + " " + isSupported);
+
         try {
             newCameraCapturer = new Camera2Capturer(
                     context,
